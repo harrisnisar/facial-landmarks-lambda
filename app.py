@@ -108,4 +108,13 @@ def handler(event, context):
 
     data, filename, _ = overlay_preds(display_image, pred_landmarks, key_for_unprocessed_image, '/tmp')
     upload_processed_data_to_s3(data, filename, bucket_for_processed_image)
+    
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('facial-landmark-post')
+    table.put_item(
+    Item={
+            'uuid': filename
+        }
+    )
+
     return 'Image Processed' + sys.version + '!' + bucket_for_processed_image + " " + bucket_for_processed_image
